@@ -1,0 +1,57 @@
+name: Get Environment (wemogy)
+author: wemogy
+description: Detects on which branch a workflow is running on and derives an environment name from that
+branding:
+  icon: "git-branch"
+  color: "blue"
+
+inputs:
+  staging:
+    description: "Name of the staging branch"
+    default: "staging"
+    required: true
+  prod:
+    description: "Name of the production branch"
+    default: "prod"
+    required: true
+  dev:
+    description: "Name of the development branch"
+    default: "main"
+    required: true
+  default:
+    description: "Default environment, if no branch match found"
+    default: "dev"
+    required: true
+
+outputs:
+  env:
+    description: "The Environment this branch is targeting"
+    value: ${{ steps.check.outputs.env }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Commit and push
+      id: check
+      shell: bash
+      run: |
+        BRANCH_NAME=""
+        if [[ ${GITHUB_HEAD_REF} != "" ]]; then
+          $BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | tr / -)"
+        else
+          $BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)"
+        fi
+
+        if [[ $BRANCH_NAME == "${{ inputs.staging }}" ]]; then
+          echo "Staging branch detected. Environment: staging"
+          echo "::set-output name=env::staging"
+        elif [[ $BRANCH_NAME == "${{ inputs.prod }}" ]]; then
+          echo "Production branch detected. Environment: prod"
+          echo "::set-output name=env::prod"
+        elif [[ $BRANCH_NAME == "${{ inputs.dev }}" ]]; then
+          echo "Development branch detected. Environment: dev"
+          echo "::set-output name=env::dev"
+        else
+          echo "No specific branch detected. Environment: ${{ inputs.default }}"
+          echo "::set-output name=env::${{ inputs.default }}"
+        fi
