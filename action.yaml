@@ -7,15 +7,15 @@ branding:
 
 inputs:
   staging:
-    description: "Name of the staging branch"
+    description: "Name of the branch that should result in environment 'staging'"
     default: "staging"
     required: true
   prod:
-    description: "Name of the production branch"
+    description: "Name of the branch that should result in environment 'prod'"
     default: "prod"
     required: true
   dev:
-    description: "Name of the development branch"
+    description: "Name of the branch that should result in environment 'dev'"
     default: "main"
     required: true
   default:
@@ -27,6 +27,9 @@ outputs:
   env:
     description: "The Environment this branch is targeting"
     value: ${{ steps.check.outputs.env }}
+  exact-match:
+    description: "The current branch exactly matches/"
+    value: ${{ steps.check.outputs.exact-match }}
 
 runs:
   using: "composite"
@@ -35,23 +38,32 @@ runs:
       id: check
       shell: bash
       run: |
-        BRANCH_NAME=""
-        if [[ ${GITHUB_HEAD_REF} != "" ]]; then
-          $BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | tr / -)"
+        # Find current branch
+        # When executing this in context of a pull request, the GITHUB_HEAD_REF points to the source branch.
+        # When executing this outside of a pull request, the GITHUB_HEAD_REF is empty and GITHUB_REF points to the current branch.
+        if [[ "${GITHUB_HEAD_REF}" != "" ]]; then
+          BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | tr / -)
         else
-          $BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)"
+          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
         fi
 
+        echo "Current branch: $BRANCH_NAME"
+
+        # Compare current branch with environments
         if [[ $BRANCH_NAME == "${{ inputs.staging }}" ]]; then
-          echo "Staging branch detected. Environment: staging"
+          echo "Environment: staging"
           echo "::set-output name=env::staging"
+          echo "::set-output name=exact-match::true"
         elif [[ $BRANCH_NAME == "${{ inputs.prod }}" ]]; then
-          echo "Production branch detected. Environment: prod"
+          echo "Environment: prod"
           echo "::set-output name=env::prod"
+          echo "::set-output name=exact-match::true"
         elif [[ $BRANCH_NAME == "${{ inputs.dev }}" ]]; then
-          echo "Development branch detected. Environment: dev"
+          echo "Environment: dev"
           echo "::set-output name=env::dev"
+          echo "::set-output name=exact-match::true"
         else
           echo "No specific branch detected. Environment: ${{ inputs.default }}"
           echo "::set-output name=env::${{ inputs.default }}"
+          echo "::set-output name=exact-match::false"
         fi
