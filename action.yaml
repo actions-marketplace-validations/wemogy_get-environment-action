@@ -32,7 +32,7 @@ outputs:
     value: ${{ steps.check.outputs.exact-match }}
   pull-request:
     description: "Is the current branch part of a pull request?"
-    value: ${{ steps.check.outputs.exact-match }}
+    value: ${{ steps.check.outputs.pull-request }}
 
 runs:
   using: "composite"
