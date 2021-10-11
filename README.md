@@ -14,15 +14,17 @@ A GitHub Action to detect on which branch a workflow is running on and derive an
 
 ## Inputs
 
-| Input     | Description                                                  |
-| --------- | ------------------------------------------------------------ |
-| `staging` | Name of the staging branch (Default: staging)                |
-| `prod`    | Name of the production branch (Default: prod)                |
-| `dev`     | Name of the development branch (Default: dev)                |
-| `default` | Default environment, if no branch match found (Default: dev) |
+| Input     | Description                                                                       |
+| --------- | --------------------------------------------------------------------------------- |
+| `staging` | Name of the branch that should result in environment 'staging' (Default: staging) |
+| `prod`    | Name of the branch that should result in environment 'prod' (Default: prod)       |
+| `dev`     | Name of the branch that should result in environment 'dev' (Default: dev)         |
+| `default` | Default environment, if no branch match found (Default: dev)                      |
 
 ## Outputs
 
-| Output | Description                              |
-| ------ | ---------------------------------------- |
-| `env`  | The Environment this branch is targeting |
+| Output         | Description                                                    |
+| -------------- | -------------------------------------------------------------- |
+| `env`          | Does the current branch exactly match one of the environments? |
+| `exact-match`  | The current branch exactly matches                             |
+| `pull-request` | Is the current branch part of a pull request?                  |

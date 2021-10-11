@@ -28,7 +28,10 @@ outputs:
     description: "The Environment this branch is targeting"
     value: ${{ steps.check.outputs.env }}
   exact-match:
-    description: "The current branch exactly matches/"
+    description: "Does the current branch exactly match one of the environments?"
+    value: ${{ steps.check.outputs.exact-match }}
+  pull-request:
+    description: "Is the current branch part of a pull request?"
     value: ${{ steps.check.outputs.exact-match }}
 
 runs:
@@ -43,8 +46,10 @@ runs:
         # When executing this outside of a pull request, the GITHUB_HEAD_REF is empty and GITHUB_REF points to the current branch.
         if [[ "${GITHUB_HEAD_REF}" != "" ]]; then
           BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | tr / -)
+          echo "::set-output name=pull-request::true"
         else
           BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+          echo "::set-output name=pull-request::false"
         fi
 
         echo "Current branch: $BRANCH_NAME"
