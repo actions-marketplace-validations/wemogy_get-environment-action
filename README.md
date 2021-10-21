@@ -28,3 +28,4 @@ A GitHub Action to detect on which branch a workflow is running on and derive an
 | `env`          | Does the current branch exactly match one of the environments? |
 | `exact-match`  | The current branch exactly matches                             |
 | `pull-request` | Is the current branch part of a pull request?                  |
+| `branch-name`  | Name of the branch this is running on.                         |
