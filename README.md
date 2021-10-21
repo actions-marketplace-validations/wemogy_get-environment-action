@@ -7,7 +7,7 @@ A GitHub Action to detect on which branch or Pull Request a workflow is running 
 ```yaml
 - name: Get Environment
   id: get-environment
-  uses: wemogy/get-environment-action@2.0.1
+  uses: wemogy/get-environment-action@2.0.2
 
 - run: echo ${{ steps.get-environment.outputs.env }}
 ```
