@@ -96,7 +96,7 @@ runs:
           echo "Pull Request detected."
           ENVIRONMENT=${{ inputs.pr-environment }}
           EXACT_MATCH=false
-          DOMAIN_PREFIX=pr-${{ github.event.pull_request.number }}
+          DOMAIN_PREFIX=${{ github.event.pull_request.number }}.pr
           SLUG=pr-${{ github.event.pull_request.number }}
         else
           echo "::warning title=Could not find environment::No matching branch and no Pull Request found."
