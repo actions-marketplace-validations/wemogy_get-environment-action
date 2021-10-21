@@ -94,10 +94,10 @@ runs:
           VERSION_SUFFIX=dev         
         elif [[ $PULL_REQUEST ]]; then
           echo "Pull Request detected."
-          ENVIRONMENT=${{ inputs.pr-environment }}"
+          ENVIRONMENT=${{ inputs.pr-environment }}
           EXACT_MATCH=false
-          DOMAIN_PREFIX=pr-${{ github.event.pull_request.number }}"
-          VERSION_SUFFIX=pr-${{ github.event.pull_request.number }}"          
+          DOMAIN_PREFIX=pr-${{ github.event.pull_request.number }}
+          VERSION_SUFFIX=pr-${{ github.event.pull_request.number }}
         else
           echo "::warning title=Could not find environment::No matching branch and no Pull Request found."
         fi
@@ -115,7 +115,7 @@ runs:
         echo "::set-output name=exact-match::$EXACT_MATCH"
         
         echo "Domain prefix: $DOMAIN_PREFIX"
-        echo "::set-output name=domain-prefix::$DOMAIN_PREFIX
+        echo "::set-output name=domain-prefix::$DOMAIN_PREFIX"
         
         echo "Version suffix: $VERSION_SUFFIX"
         echo "::set-output name=version-suffix::$VERSION_SUFFIX"
