@@ -35,7 +35,7 @@ outputs:
     value: ${{ steps.check.outputs.pull-request }}
   branch-name:
     description: "The name of the branch this is running on"
-    value: ${{ steps.check.outputs.pull-request }}
+    value: ${{ steps.check.outputs.branch-name }}
 
 runs:
   using: "composite"
