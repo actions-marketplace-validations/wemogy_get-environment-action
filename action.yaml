@@ -70,41 +70,52 @@ runs:
         # When executing this outside of a pull request, the GITHUB_HEAD_REF is empty and GITHUB_REF points to the current branch.
         if [[ "${GITHUB_HEAD_REF}" != "" ]]; then
           BRANCH_NAME=$(echo ${GITHUB_HEAD_REF})
-          IS_PULL_REQUEST=true
+          PULL_REQUEST=true
         else
           BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
-          IS_PULL_REQUEST=false
-        fi
-
-        echo "Current branch: $BRANCH_NAME"
-        echo "::set-output name=branch-name::$BRANCH_NAME"
-        echo "::set-output name=pull-request::$IS_PULL_REQUEST"
+          PULL_REQUEST=false
+        fi        
 
         # Compare current branch with environments
         if [[ $BRANCH_NAME == "${{ inputs.staging-branch }}" ]]; then
-          echo "Environment: staging"
-          echo "::set-output name=env::staging"
-          echo "::set-output name=exact-match::true"
-          echo "::set-output name=domain-prefix::${{ inputs.staging-domain-prefix }}"
-          echo "::set-output name=version-suffix::staging"
+          ENVIRONMENT=staging
+          EXACT_MATCH=true
+          DOMAIN_PREFIX=${{ inputs.staging-domain-prefix }}
+          VERSION_SUFFIX=staging          
         elif [[ $BRANCH_NAME == "${{ inputs.prod-branch }}" ]]; then
-          echo "Environment: prod"
-          echo "::set-output name=env::prod"
-          echo "::set-output name=exact-match::true"
-          echo "::set-output name=domain-prefix::${{ inputs.prod-domain-prefix }}"
-          echo "::set-output name=version-suffix::prod"
+          ENVIRONMENT=prod
+          EXACT_MATCH=true
+          DOMAIN_PREFIX=${{ inputs.prod-domain-prefix }}
+          VERSION_SUFFIX=prod       
         elif [[ $BRANCH_NAME == "${{ inputs.dev-branch }}" ]]; then
-          echo "Environment: dev"
-          echo "::set-output name=env::dev"
-          echo "::set-output name=exact-match::true"
-          echo "::set-output name=domain-prefix::${{ inputs.dev-domain-prefix }}"
-          echo "::set-output name=version-suffix::dev"
-        elif [[ $IS_PULL_REQUEST ]]; then
-          echo "Pull Request detected. Environment: ${{ inputs.pr-environment }}"
-          echo "::set-output name=env::${{ inputs.pr-environment }}"
-          echo "::set-output name=exact-match::false"
-          echo "::set-output name=domain-prefix::pr-${{ github.event.pull_request.number }}"
-          echo "::set-output name=version-suffix::pr-${{ github.event.pull_request.number }}"
+          ENVIRONMENT=dev
+          EXACT_MATCH=true
+          DOMAIN_PREFIX=${{ inputs.dev-domain-prefix }}
+          VERSION_SUFFIX=dev         
+        elif [[ $PULL_REQUEST ]]; then
+          echo "Pull Request detected."
+          ENVIRONMENT=${{ inputs.pr-environment }}"
+          EXACT_MATCH=false
+          DOMAIN_PREFIX=pr-${{ github.event.pull_request.number }}"
+          VERSION_SUFFIX=pr-${{ github.event.pull_request.number }}"          
         else
           echo "::warning title=Could not find environment::No matching branch and no Pull Request found."
         fi
+        
+        echo "Current branch: $BRANCH_NAME"
+        echo "::set-output name=branch-name::$BRANCH_NAME"
+        
+        echo "Pull Request: $PULL_REQUEST"
+        echo "::set-output name=pull-request::$PULL_REQUEST"
+        
+        echo "Environment: $ENVIRONMENT"
+        echo "::set-output name=env::$ENVIRONMENT"
+        
+        echo "Exact match: $EXACT_MATCH"
+        echo "::set-output name=exact-match::$EXACT_MATCH"
+        
+        echo "Domain prefix: $DOMAIN_PREFIX"
+        echo "::set-output name=domain-prefix::$DOMAIN_PREFIX
+        
+        echo "Version suffix: $VERSION_SUFFIX"
+        echo "::set-output name=version-suffix::$VERSION_SUFFIX"
