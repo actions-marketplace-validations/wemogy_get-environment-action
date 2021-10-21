@@ -1,6 +1,6 @@
 name: Get Environment (wemogy)
 author: wemogy
-description: Detects on which branch a workflow is running on and derives an environment name from that
+description: Detects on which branch or Pull Request a workflow is running on and derives an environment name, domain-prefix and version-suffix from that.
 branding:
   icon: "git-branch"
   color: "blue"
@@ -14,7 +14,7 @@ inputs:
     description: "Prefix to use in domains when environment is 'prod'"
     default: ""
     required: true
-    
+
   staging-branch:
     description: "Name of the branch that should result in environment 'staging'"
     default: "staging"
@@ -23,7 +23,7 @@ inputs:
     description: "Prefix to use in domains when environment is 'staging'"
     default: "staging"
     required: true
-    
+
   dev-branch:
     description: "Name of the branch that should result in environment 'dev'"
     default: "main"
@@ -32,9 +32,9 @@ inputs:
     description: "Prefix to use in domains when environment is 'dev'"
     default: "dev"
     required: true
-  
+
   pr-environment:
-    description: "Default environment, if no branch match found"
+    description: "Environment that should be used for Pull Request deployments"
     default: "dev"
     required: true
 
@@ -52,10 +52,10 @@ outputs:
     description: "The name of the branch this is running on"
     value: ${{ steps.check.outputs.branch-name }}
   domain-prefix:
-    description: "The name of the branch this is running on"
+    description: "Prefix to use in domains"
     value: ${{ steps.check.outputs.domain-prefix }}
   version-suffix:
-    description: "The name of the branch this is running on"
+    description: "Suffix to attach to versions"
     value: ${{ steps.check.outputs.version-suffix }}
 
 runs:
