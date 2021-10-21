@@ -81,23 +81,23 @@ runs:
         echo "::set-output name=pull-request::$IS_PULL_REQUEST"
 
         # Compare current branch with environments
-        if [[ $BRANCH_NAME == "${{ inputs.staging }}" ]]; then
+        if [[ $BRANCH_NAME == "${{ inputs.staging-branch }}" ]]; then
           echo "Environment: staging"
           echo "::set-output name=env::staging"
           echo "::set-output name=exact-match::true"
-          echo "::set-output name=domain-prefix::${{ staging-domain-prefix }}"
+          echo "::set-output name=domain-prefix::${{ inputs.staging-domain-prefix }}"
           echo "::set-output name=version-suffix::staging"
-        elif [[ $BRANCH_NAME == "${{ inputs.prod }}" ]]; then
+        elif [[ $BRANCH_NAME == "${{ inputs.prod-branch }}" ]]; then
           echo "Environment: prod"
           echo "::set-output name=env::prod"
           echo "::set-output name=exact-match::true"
-          echo "::set-output name=domain-prefix::${{ prod-domain-prefix }}"
+          echo "::set-output name=domain-prefix::${{ inputs.prod-domain-prefix }}"
           echo "::set-output name=version-suffix::prod"
-        elif [[ $BRANCH_NAME == "${{ inputs.dev }}" ]]; then
+        elif [[ $BRANCH_NAME == "${{ inputs.dev-branch }}" ]]; then
           echo "Environment: dev"
           echo "::set-output name=env::dev"
           echo "::set-output name=exact-match::true"
-          echo "::set-output name=domain-prefix::${{ dev-domain-prefix }}"
+          echo "::set-output name=domain-prefix::${{ inputs.dev-domain-prefix }}"
           echo "::set-output name=version-suffix::dev"
         elif [[ $IS_PULL_REQUEST ]]; then
           echo "Pull Request detected. Environment: ${{ inputs.pr-environment }}"
