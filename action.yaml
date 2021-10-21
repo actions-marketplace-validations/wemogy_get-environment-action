@@ -54,9 +54,9 @@ outputs:
   domain-prefix:
     description: "Prefix to use in domains"
     value: ${{ steps.check.outputs.domain-prefix }}
-  version-suffix:
-    description: "Suffix to attach to versions"
-    value: ${{ steps.check.outputs.version-suffix }}
+  slug:
+    description: "Environment slug to attach as suffix to versions and resources like Kubernetes namespaces"
+    value: ${{ steps.check.outputs.slug }}
 
 runs:
   using: "composite"
@@ -81,23 +81,23 @@ runs:
           ENVIRONMENT=staging
           EXACT_MATCH=true
           DOMAIN_PREFIX=${{ inputs.staging-domain-prefix }}
-          VERSION_SUFFIX=staging          
+          SLUG=staging          
         elif [[ $BRANCH_NAME == "${{ inputs.prod-branch }}" ]]; then
           ENVIRONMENT=prod
           EXACT_MATCH=true
           DOMAIN_PREFIX=${{ inputs.prod-domain-prefix }}
-          VERSION_SUFFIX=prod       
+          SLUG=prod       
         elif [[ $BRANCH_NAME == "${{ inputs.dev-branch }}" ]]; then
           ENVIRONMENT=dev
           EXACT_MATCH=true
           DOMAIN_PREFIX=${{ inputs.dev-domain-prefix }}
-          VERSION_SUFFIX=dev         
+          SLUG=dev         
         elif [[ $PULL_REQUEST ]]; then
           echo "Pull Request detected."
           ENVIRONMENT=${{ inputs.pr-environment }}
           EXACT_MATCH=false
           DOMAIN_PREFIX=pr-${{ github.event.pull_request.number }}
-          VERSION_SUFFIX=pr-${{ github.event.pull_request.number }}
+          SLUG=pr-${{ github.event.pull_request.number }}
         else
           echo "::warning title=Could not find environment::No matching branch and no Pull Request found."
         fi
@@ -117,5 +117,5 @@ runs:
         echo "Domain prefix: $DOMAIN_PREFIX"
         echo "::set-output name=domain-prefix::$DOMAIN_PREFIX"
         
-        echo "Version suffix: $VERSION_SUFFIX"
-        echo "::set-output name=version-suffix::$VERSION_SUFFIX"
+        echo "Slug: $SLUG"
+        echo "::set-output name=slug::$SLUG"
