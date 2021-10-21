@@ -1,6 +1,6 @@
 name: Get Environment (wemogy)
 author: wemogy
-description: Detects on which branch or Pull Request a workflow is running on and derives an environment name, domain-prefix and version-suffix from that.
+description: Detects on which branch or Pull Request a workflow is running on and derives an environment information from that.
 branding:
   icon: "git-branch"
   color: "blue"
