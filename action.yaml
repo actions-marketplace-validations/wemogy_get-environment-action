@@ -48,10 +48,10 @@ runs:
         # When executing this in context of a pull request, the GITHUB_HEAD_REF points to the source branch.
         # When executing this outside of a pull request, the GITHUB_HEAD_REF is empty and GITHUB_REF points to the current branch.
         if [[ "${GITHUB_HEAD_REF}" != "" ]]; then
-          BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | tr / -)
+          BRANCH_NAME=$(echo ${GITHUB_HEAD_REF})
           echo "::set-output name=pull-request::true"
         else
-          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
           echo "::set-output name=pull-request::false"
         fi
 
