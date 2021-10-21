@@ -33,6 +33,9 @@ outputs:
   pull-request:
     description: "Is the current branch part of a pull request?"
     value: ${{ steps.check.outputs.pull-request }}
+  branch-name:
+    description: "The name of the branch this is running on"
+    value: ${{ steps.check.outputs.pull-request }}
 
 runs:
   using: "composite"
@@ -53,6 +56,7 @@ runs:
         fi
 
         echo "Current branch: $BRANCH_NAME"
+        echo "::set-output name=branch-name::$BRANCH_NAME"
 
         # Compare current branch with environments
         if [[ $BRANCH_NAME == "${{ inputs.staging }}" ]]; then
