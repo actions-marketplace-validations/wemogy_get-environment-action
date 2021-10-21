@@ -33,4 +33,4 @@ A GitHub Action to detect on which branch or Pull Request a workflow is running 
 | `pull-request`   | Is the current branch part of a pull request?                  |
 | `branch-name`    | Name of the branch this is running on.                         |
 | `domain-prefix`  | Prefix to use in domains                                       |
-| `version-suffix` | Suffix to attach to versions                                   |
+| `slug`           | Environment slug to attach as suffix to versions and resources like Kubernetes namespaces |
