@@ -39,7 +39,7 @@ inputs:
     required: true
   pr-custom-environment-label:
     description: "Pull Request label that should result in custom environment"
-    default: "deploy-custom"
+    default: "deploy-custom-environment"
     required: true
 
 outputs:
@@ -104,7 +104,7 @@ runs:
         elif [[ $PULL_REQUEST ]]; then
           echo "Pull Request detected."
 
-          if [[ ${{ github.event.label.name }} == ${{ inputs.pr-custom-environment-label }}; then
+          if [[ ${{ github.event.label.name }} == "${{ inputs.pr-custom-environment-label }}" ]]; then
             echo "${{ inputs.pr-custom-environment-label }} label detected. Deploying into custom environment."
             ENVIRONMENT=pr-${{ github.event.pull_request.number }}
             CUSTOM_ENVIRONMENT=true
