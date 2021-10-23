@@ -39,7 +39,7 @@ inputs:
     required: true
   pr-custom-environment-label:
     description: "Pull Request label that should result in custom environment"
-    default: "deploy-custom-environment"
+    default: "deploy-to-custom"
     required: true
 
 outputs:
@@ -106,7 +106,7 @@ runs:
 
           if [[ ${{ github.event.label.name }} == "${{ inputs.pr-custom-environment-label }}" ]]; then
             echo "${{ inputs.pr-custom-environment-label }} label detected. Deploying into custom environment."
-            ENVIRONMENT=pr-${{ github.event.pull_request.number }}
+            ENVIRONMENT=pr${{ github.event.pull_request.number }}
             CUSTOM_ENVIRONMENT=true
           else 
             ENVIRONMENT=${{ inputs.pr-environment }}
@@ -114,7 +114,7 @@ runs:
 
           EXACT_MATCH=false
           DOMAIN_PREFIX=${{ github.event.pull_request.number }}.pr
-          SLUG=pr-${{ github.event.pull_request.number }}
+          SLUG=pr${{ github.event.pull_request.number }}
         else
           echo "::warning title=Could not find environment::No matching branch and no Pull Request found."
         fi
