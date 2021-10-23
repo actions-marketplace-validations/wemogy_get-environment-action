@@ -37,6 +37,10 @@ inputs:
     description: "Environment that should be used for Pull Request deployments"
     default: "dev"
     required: true
+  pr-custom-environment-label:
+    description: "Pull Request label that should result in custom environment"
+    default: "deploy-custom"
+    required: true
 
 outputs:
   env:
@@ -48,6 +52,9 @@ outputs:
   pull-request:
     description: "Is the current branch part of a pull request?"
     value: ${{ steps.check.outputs.pull-request }}
+  custom-environment:
+    description: "Deploying into a custom environment?"
+    value: ${{ steps.check.outputs.custom-environment }}
   branch-name:
     description: "The name of the branch this is running on"
     value: ${{ steps.check.outputs.branch-name }}
@@ -65,6 +72,8 @@ runs:
       id: check
       shell: bash
       run: |
+        CUSTOM_ENVIRONMENT=false
+        
         # Find current branch
         # When executing this in context of a pull request, the GITHUB_HEAD_REF points to the source branch.
         # When executing this outside of a pull request, the GITHUB_HEAD_REF is empty and GITHUB_REF points to the current branch.
@@ -94,7 +103,15 @@ runs:
           SLUG=dev         
         elif [[ $PULL_REQUEST ]]; then
           echo "Pull Request detected."
-          ENVIRONMENT=${{ inputs.pr-environment }}
+
+          if [[ ${{ github.event.label.name }} == ${{ inputs.pr-custom-environment-label }}; then
+            echo "${{ inputs.pr-custom-environment-label }} label detected. Deploying into custom environment."
+            ENVIRONMENT=pr-${{ github.event.pull_request.number }}
+            CUSTOM_ENVIRONMENT=true
+          else 
+            ENVIRONMENT=${{ inputs.pr-environment }}
+          fi
+
           EXACT_MATCH=false
           DOMAIN_PREFIX=${{ github.event.pull_request.number }}.pr
           SLUG=pr-${{ github.event.pull_request.number }}
@@ -110,6 +127,9 @@ runs:
         
         echo "Environment: $ENVIRONMENT"
         echo "::set-output name=env::$ENVIRONMENT"
+        
+        echo "Custom Environment: $CUSTOM_ENVIRONMENT"
+        echo "::set-output name=custom-environment::$CUSTOM_ENVIRONMENT"
         
         echo "Exact match: $EXACT_MATCH"
         echo "::set-output name=exact-match::$EXACT_MATCH"
