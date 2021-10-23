@@ -23,7 +23,7 @@ A GitHub Action to detect on which branch or Pull Request a workflow is running 
 | `dev`                   | Name of the branch that should result in environment 'dev'     | `"main"`    |
 | `dev-domain-prefix`     | Prefix to use in domains when environment is 'dev'             | `"dev"`     |
 | `pr-environment`        | Environment that should be used for Pull Request deployments   | `"dev"`     |
-| `pr-custom-environment-label`        | Pull Request label that should result in custom environment `pr<NUMBER>`   | `"deploy-custom-environment"`     |
+| `pr-custom-environment-label`        | Pull Request label that should result in custom environment `pr<NUMBER>`   | `"deploy-to-custom"`     |
 
 ## Outputs
 
