@@ -7,7 +7,7 @@ A GitHub Action to detect on which branch or Pull Request a workflow is running 
 ```yaml
 - name: Get Environment
   id: get-environment
-  uses: wemogy/get-environment-action@2.4.1
+  uses: wemogy/get-environment-action@2.5.0
 
 - run: echo ${{ steps.get-environment.outputs.env }}
 ```
@@ -23,7 +23,8 @@ A GitHub Action to detect on which branch or Pull Request a workflow is running 
 | `dev`                   | Name of the branch that should result in environment 'dev'     | `"main"`    |
 | `dev-domain-prefix`     | Prefix to use in domains when environment is 'dev'             | `"dev"`     |
 | `pr-environment`        | Environment that should be used for Pull Request deployments   | `"dev"`     |
-| `pr-custom-environment-label`        | Pull Request label that should result in custom environment `pr<NUMBER>`   | `"deploy-to-custom"`     |
+| `pr-deployment-label`        | Pull Request label that should indicate deplotment into the default pr-environemnt   | `"deploy-to-dev"`     |
+| `pr-deployment-label-custom-environment`        | Pull Request label that should indicate deplotment into a custom environemnt `pr<NUMBER>`   | `"deploy-to-custom"`     |
 
 ## Outputs
 
