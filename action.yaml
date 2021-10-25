@@ -37,8 +37,12 @@ inputs:
     description: "Environment that should be used for Pull Request deployments"
     default: "dev"
     required: true
-  pr-custom-environment-label:
-    description: "Pull Request label that should result in custom environment"
+  pr-deployment-label:
+    description: "Pull Request label that should indicate deplotment into the default pr-environemnt"
+    default: "deploy-to-dev"
+    required: true
+  pr-deployment-label-custom-environment:
+    description: "Pull Request label that should indicate deplotment into a custom environemnt"
     default: "deploy-to-custom"
     required: true
 
@@ -68,6 +72,10 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Get Pull Request Labels
+      id: pr-labels
+      uses: joerick/pr-labels-action@v1.0.6      
+      
     - name: Commit and push
       id: check
       shell: bash
@@ -103,12 +111,12 @@ runs:
           SLUG=dev         
         elif [[ $PULL_REQUEST ]]; then
           echo "Pull Request detected."
-
-          if [[ "${{ github.event.label.name }}" == "${{ inputs.pr-custom-environment-label }}" ]]; then
-            echo "${{ inputs.pr-custom-environment-label }} label detected. Deploying into custom environment."
+          
+          if [[ "${{ steps.pr-labels.labels }}" =~ "${{ inputs.pr-deployment-label-custom-environment }}" ]]; then
+            echo "${{ inputs.pr-deployment-label-custom-environment }} label detected. Deploying into custom environment."
             ENVIRONMENT=pr${{ github.event.pull_request.number }}
             CUSTOM_ENVIRONMENT=true
-          else 
+          elif [[ "${{ steps.pr-labels.labels }}" =~ "${{ inputs.pr-deployment-label }}" ]]; then 
             ENVIRONMENT=${{ inputs.pr-environment }}
           fi
 
