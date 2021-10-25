@@ -20,7 +20,7 @@ A GitHub Action to detect on which branch or Pull Request a workflow is running 
 | `prod-domain-prefix`    | Prefix to use in domains when environment is 'prod'            | `""`        |
 | `staging-branch`        | Name of the branch that should result in environment 'staging' | `"staging"` |
 | `staging-domain-prefix` | Prefix to use in domains when environment is 'staging'         | `"staging"` |
-| `dev`                   | Name of the branch that should result in environment 'dev'     | `"main"`    |
+| `dev-branch`                   | Name of the branch that should result in environment 'dev'     | `"main"`    |
 | `dev-domain-prefix`     | Prefix to use in domains when environment is 'dev'             | `"dev"`     |
 | `pr-environment`        | Environment that should be used for Pull Request deployments   | `"dev"`     |
 | `pr-deployment-label`        | Pull Request label that should indicate deplotment into the default pr-environemnt   | `"deploy-to-dev"`     |
