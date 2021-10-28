@@ -112,11 +112,11 @@ runs:
         elif [[ $PULL_REQUEST ]]; then
           echo "Pull Request detected."
           
-          if [[ "${{ steps.pr-labels.labels }}" =~ "${{ inputs.pr-deployment-label-custom-environment }}" ]]; then
+          if [[ "${{ steps.pr-labels.outputs.labels }}" =~ "${{ inputs.pr-deployment-label-custom-environment }}" ]]; then
             echo "${{ inputs.pr-deployment-label-custom-environment }} label detected. Deploying into custom environment."
             ENVIRONMENT=pr${{ github.event.pull_request.number }}
             CUSTOM_ENVIRONMENT=true
-          elif [[ "${{ steps.pr-labels.labels }}" =~ "${{ inputs.pr-deployment-label }}" ]]; then 
+          elif [[ "${{ steps.pr-labels.outputs.labels }}" =~ "${{ inputs.pr-deployment-label }}" ]]; then 
             ENVIRONMENT=${{ inputs.pr-environment }}
           fi
 
