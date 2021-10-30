@@ -37,14 +37,11 @@ inputs:
     description: "Environment that should be used for Pull Request deployments"
     default: "dev"
     required: true
-  pr-deployment-label:
-    description: "Pull Request label that should indicate deplotment into the default pr-environemnt"
-    default: "deploy-to-dev"
-    required: true
-  pr-deployment-label-custom-environment:
-    description: "Pull Request label that should indicate deplotment into a custom environemnt"
-    default: "deploy-to-custom"
-    required: true
+
+  use-custom-environment:
+    description: "Should a custom environmen should be used for this deployment?"
+    default: "false"
+    required: true    
 
 outputs:
   env:
@@ -72,11 +69,7 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Get Pull Request Labels
-      id: pr-labels
-      uses: joerick/pr-labels-action@v1.0.6      
-      
-    - name: Commit and push
+    - name: Check
       id: check
       shell: bash
       run: |
