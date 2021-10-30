@@ -37,11 +37,10 @@ inputs:
     description: "Environment that should be used for Pull Request deployments"
     default: "dev"
     required: true
-
-  use-custom-environment:
-    description: "Should a custom environmen should be used for this deployment?"
+  pr-use-custom-environment:
+    description: "Should the Pull Request be deployed into a custom environment?"
     default: "false"
-    required: true    
+    required: true
 
 outputs:
   env:
@@ -74,7 +73,7 @@ runs:
       shell: bash
       run: |
         CUSTOM_ENVIRONMENT=false
-        
+
         # Find current branch
         # When executing this in context of a pull request, the GITHUB_HEAD_REF points to the source branch.
         # When executing this outside of a pull request, the GITHUB_HEAD_REF is empty and GITHUB_REF points to the current branch.
@@ -84,32 +83,32 @@ runs:
         else
           BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
           PULL_REQUEST=false
-        fi        
+        fi
 
         # Compare current branch with environments
         if [[ $BRANCH_NAME == "${{ inputs.staging-branch }}" ]]; then
           ENVIRONMENT=staging
           EXACT_MATCH=true
           DOMAIN_PREFIX=${{ inputs.staging-domain-prefix }}
-          SLUG=staging          
+          SLUG=staging
         elif [[ $BRANCH_NAME == "${{ inputs.prod-branch }}" ]]; then
           ENVIRONMENT=prod
           EXACT_MATCH=true
           DOMAIN_PREFIX=${{ inputs.prod-domain-prefix }}
-          SLUG=prod       
+          SLUG=prod
         elif [[ $BRANCH_NAME == "${{ inputs.dev-branch }}" ]]; then
           ENVIRONMENT=dev
           EXACT_MATCH=true
           DOMAIN_PREFIX=${{ inputs.dev-domain-prefix }}
-          SLUG=dev         
+          SLUG=dev
         elif [[ $PULL_REQUEST ]]; then
           echo "Pull Request detected."
-          
-          if [[ "${{ steps.pr-labels.outputs.labels }}" =~ "${{ inputs.pr-deployment-label-custom-environment }}" ]]; then
-            echo "${{ inputs.pr-deployment-label-custom-environment }} label detected. Deploying into custom environment."
+
+          if [[ "${{ inputs.pr-use-custom-environment }}" == "true" ]]; then
+            echo "Deploying into custom environment."
             ENVIRONMENT=pr${{ github.event.pull_request.number }}
             CUSTOM_ENVIRONMENT=true
-          elif [[ "${{ steps.pr-labels.outputs.labels }}" =~ "${{ inputs.pr-deployment-label }}" ]]; then 
+          else
             ENVIRONMENT=${{ inputs.pr-environment }}
           fi
 
@@ -119,24 +118,24 @@ runs:
         else
           echo "::warning title=Could not find environment::No matching branch and no Pull Request found."
         fi
-        
+
         echo "Current branch: $BRANCH_NAME"
         echo "::set-output name=branch-name::$BRANCH_NAME"
-        
+
         echo "Pull Request: $PULL_REQUEST"
         echo "::set-output name=pull-request::$PULL_REQUEST"
-        
+
         echo "Environment: $ENVIRONMENT"
         echo "::set-output name=env::$ENVIRONMENT"
-        
+
         echo "Custom Environment: $CUSTOM_ENVIRONMENT"
         echo "::set-output name=custom-environment::$CUSTOM_ENVIRONMENT"
-        
+
         echo "Exact match: $EXACT_MATCH"
         echo "::set-output name=exact-match::$EXACT_MATCH"
-        
+
         echo "Domain prefix: $DOMAIN_PREFIX"
         echo "::set-output name=domain-prefix::$DOMAIN_PREFIX"
-        
+
         echo "Slug: $SLUG"
         echo "::set-output name=slug::$SLUG"

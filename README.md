@@ -7,33 +7,32 @@ A GitHub Action to detect on which branch or Pull Request a workflow is running 
 ```yaml
 - name: Get Environment
   id: get-environment
-  uses: wemogy/get-environment-action@2.5.0
+  uses: wemogy/get-environment-action@3.0.0
 
 - run: echo ${{ steps.get-environment.outputs.env }}
 ```
 
 ## Inputs
 
-| Input                   | Description                                                    | Default     |
-| ----------------------- | -------------------------------------------------------------- | ----------- |
-| `prod-branch`           | Name of the branch that should result in environment 'prod'    | `"prod"`    |
-| `prod-domain-prefix`    | Prefix to use in domains when environment is 'prod'            | `""`        |
-| `staging-branch`        | Name of the branch that should result in environment 'staging' | `"staging"` |
-| `staging-domain-prefix` | Prefix to use in domains when environment is 'staging'         | `"staging"` |
-| `dev-branch`                   | Name of the branch that should result in environment 'dev'     | `"main"`    |
-| `dev-domain-prefix`     | Prefix to use in domains when environment is 'dev'             | `"dev"`     |
-| `pr-environment`        | Environment that should be used for Pull Request deployments   | `"dev"`     |
-| `pr-deployment-label`        | Pull Request label that should indicate deplotment into the default pr-environemnt   | `"deploy-to-dev"`     |
-| `pr-deployment-label-custom-environment`        | Pull Request label that should indicate deplotment into a custom environemnt `pr<NUMBER>`   | `"deploy-to-custom"`     |
+| Input                       | Description                                                    | Default     |
+| --------------------------- | -------------------------------------------------------------- | ----------- |
+| `prod-branch`               | Name of the branch that should result in environment 'prod'    | `"prod"`    |
+| `prod-domain-prefix`        | Prefix to use in domains when environment is 'prod'            | `""`        |
+| `staging-branch`            | Name of the branch that should result in environment 'staging' | `"staging"` |
+| `staging-domain-prefix`     | Prefix to use in domains when environment is 'staging'         | `"staging"` |
+| `dev-branch`                | Name of the branch that should result in environment 'dev'     | `"main"`    |
+| `dev-domain-prefix`         | Prefix to use in domains when environment is 'dev'             | `"dev"`     |
+| `pr-environment`            | Environment that should be used for Pull Request deployments   | `"dev"`     |
+| `pr-use-custom-environment` | Should the Pull Request be deployed into a custom environment? | `"false"`   |
 
 ## Outputs
 
-| Output           | Description                                                    |
-| ---------------- | -------------------------------------------------------------- |
-| `env`            | Does the current branch exactly match one of the environments? |
-| `exact-match`    | The current branch exactly matches                             |
-| `pull-request`   | Is the current branch part of a pull request?                  |
-| `custom-environment`   | Deploying into a custom environment?                 |
-| `branch-name`    | Name of the branch this is running on.                         |
-| `domain-prefix`  | Prefix to use in domains                                       |
-| `slug`           | Environment slug to attach as suffix to versions and resources like Kubernetes namespaces |
+| Output               | Description                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| `env`                | Does the current branch exactly match one of the environments?                            |
+| `exact-match`        | The current branch exactly matches                                                        |
+| `pull-request`       | Is the current branch part of a pull request?                                             |
+| `custom-environment` | Deploying into a custom environment?                                                      |
+| `branch-name`        | Name of the branch this is running on.                                                    |
+| `domain-prefix`      | Prefix to use in domains                                                                  |
+| `slug`               | Environment slug to attach as suffix to versions and resources like Kubernetes namespaces |
