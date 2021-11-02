@@ -6,13 +6,9 @@ branding:
   color: "blue"
 
 inputs:
-  branch:
-    description: "Name of the branch this is running on"
+  github-token:
+    description: "GitHub Token"
     required: true
-  is-pull-request:
-    description: "Is this running in context of a Pull Request?"
-    required: true
-
   prod-branch:
     description: "Name of the branch that should result in environment 'prod'"
     default: "prod"
@@ -21,7 +17,6 @@ inputs:
     description: "Prefix to use in domains when environment is 'prod'"
     default: ""
     required: true
-
   staging-branch:
     description: "Name of the branch that should result in environment 'staging'"
     default: "staging"
@@ -30,7 +25,6 @@ inputs:
     description: "Prefix to use in domains when environment is 'staging'"
     default: "staging"
     required: true
-
   dev-branch:
     description: "Name of the branch that should result in environment 'dev'"
     default: "main"
@@ -39,23 +33,42 @@ inputs:
     description: "Prefix to use in domains when environment is 'dev'"
     default: "dev"
     required: true
-
   pr-environment:
-    description: "Environment that should be used for Pull Request deployments"
+    description: "Default environment that should be used for Pull Request deployments"
     default: "dev"
     required: true
   pr-use-custom-environment:
     description: "Should the Pull Request be deployed into a custom environment?"
     default: "false"
     required: true
+  deploy-label:
+    description: "Label to trigger the default deployment"
+    default: "deploy-to-dev"
+    required: true
+  deploy-to-custom-label:
+    description: "Label to trigger a deployment into a custom environment"
+    default: "deploy-to-custom"
+    required: true
 
 outputs:
-  env:
-    description: "The Environment this branch is targeting"
-    value: ${{ steps.check.outputs.env }}
+  branch-name:
+    description: "Name of the current branch"
+    value: ${{ steps.check.outputs.branch-name }}
   exact-match:
     description: "Does the current branch exactly match one of the environments?"
     value: ${{ steps.check.outputs.exact-match }}
+  is-pull-request:
+    description: "Is this running in context of a Pull Request?"
+    value: ${{ steps.check.outputs.is-pull-request }}
+  is-deployment-needed:
+    description: "Is a deployment needed?"
+    value: ${{ steps.check.outputs.is-deployment-needed }}
+  is-custom-environment:
+    description: "Should a custom environment be used?"
+    value: ${{ steps.check.outputs.is-custom-environment }}
+  env:
+    description: "The Environment this branch is targeting"
+    value: ${{ steps.check.outputs.env }}
   domain-prefix:
     description: "Prefix to use in domains"
     value: ${{ steps.check.outputs.domain-prefix }}
@@ -69,53 +82,17 @@ runs:
     - name: Check
       id: check
       shell: bash
-      run: |
-        CURRENT_BRANCH=${{ inputs.branch }}
-        IS_PULL_REQUEST=${{ inputs.is-pull-request }}
-        DEV_BRANCH=${{ inputs.dev-branch }}
-        DEV_DOMAIN_PREFIX=${{ inputs.dev-domain-prefix }}
-        STAGING_BRANCH=${{ inputs.staging-branch }}
-        STAGING_DOMAIN_PREFIX=${{ inputs.staging-domain-prefix }}
-        PROD_BRANCH=${{ inputs.prod-branch }}
-        PROD_DOMAIN_PREFIX=${{ inputs.prod-domain-prefix }}
-        PR_ENVIRONMENT=${{ inputs.pr-environment }}
-        IS_CUSTOM_ENVIRONMENT=${{ inputs.pr-use-custom-environment }}
-
-        # Compare current branch with environments
-        if [[ "$CURRENT_BRANCH" == "$DEV_BRANCH" ]]; then
-          ENVIRONMENT=dev
-          EXACT_MATCH=true
-          DOMAIN_PREFIX=$DEV_DOMAIN_PREFIX
-          SLUG=dev
-        elif [[ "$CURRENT_BRANCH" == "$STAGING_BRANCH" ]]; then
-          ENVIRONMENT=staging
-          EXACT_MATCH=true
-          DOMAIN_PREFIX=$STAGING_DOMAIN_PREFIX
-          SLUG=staging
-        elif [[ "$CURRENT_BRANCH" == "$PROD_BRANCH" ]]; then
-          ENVIRONMENT=prod
-          EXACT_MATCH=true
-          DOMAIN_PREFIX=$PROD_DOMAIN_PREFIX
-          SLUG=prod
-        elif [[ "$IS_PULL_REQUEST" == "true" ]]; then
-          if [[ "$IS_CUSTOM_ENVIRONMENT" == "true" ]]; then
-            ENVIRONMENT=pr${{ github.event.pull_request.number }}
-          else
-            ENVIRONMENT=$PR_ENVIRONMENT
-          fi
-
-          EXACT_MATCH=false
-          DOMAIN_PREFIX=${{ github.event.pull_request.number }}.pr
-          SLUG=pr${{ github.event.pull_request.number }}
-        else
-          echo "::warning title=Could not find environment::No matching branch and no Pull Request found."
-        fi
-
-        echo "Environment: $ENVIRONMENT"
-        echo "::set-output name=env::$ENVIRONMENT"
-        echo "Exact match: $EXACT_MATCH"
-        echo "::set-output name=exact-match::$EXACT_MATCH"
-        echo "Domain prefix: $DOMAIN_PREFIX"
-        echo "::set-output name=domain-prefix::$DOMAIN_PREFIX"
-        echo "Slug: $SLUG"
-        echo "::set-output name=slug::$SLUG"
+      run: ./entrypoint.sh
+      env:
+        DEPLOY_LABEL: ${{ inputs.deploy-label }}
+        DEPLOY_CUSTOM_LABEL: ${{ inputs.deploy-to-custom-label }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        DEV_BRANCH: ${{ inputs.dev-branch }}
+        DEV_DOMAIN_PREFIX: ${{ inputs.dev-domain-prefix }}
+        STAGING_BRANCH: ${{ inputs.staging-branch }}
+        STAGING_DOMAIN_PREFIX: ${{ inputs.staging-domain-prefix }}
+        PROD_BRANCH: ${{ inputs.prod-branch }}
+        PROD_DOMAIN_PREFIX: ${{ inputs.prod-domain-prefix }}
+        PR_ENVIRONMENT: ${{ inputs.pr-environment }}
+        GITHUB_EVENT_PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+        GITHUB_EVENT_LABEL_NAME: ${{ github.event.label.name }}
