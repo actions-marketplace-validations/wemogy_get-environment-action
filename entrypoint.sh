@@ -53,23 +53,23 @@ else
 fi
 
 # Compare current branch with environments
-if [[ "$currentBranch" == "$DEV_BRANCH" ]]; then
+if [[ "$branchName" == "$DEV_BRANCH" ]]; then
   environment=dev
   exactMatch=true
   domainPrefix=$DEV_DOMAIN_PREFIX
   slug=dev
-elif [[ "$currentBranch" == "$STAGING_BRANCH" ]]; then
+elif [[ "$branchName" == "$STAGING_BRANCH" ]]; then
   environment=staging
   exactMatch=true
   domainPrefix=$STAGING_DOMAIN_PREFIX
   slug=staging
-elif [[ "$currentBranch" == "$PROD_BRANCH" ]]; then
+elif [[ "$branchName" == "$PROD_BRANCH" ]]; then
   environment=prod
   exactMatch=true
   domainPrefix=$PROD_DOMAIN_PREFIX
   slug=prod
 elif [[ "$isPullRequest" == "true" ]]; then
-  if [[ "$IS_CUSTOM_ENVIRONMENT" == "true" ]]; then
+  if [[ "$isCustomEnvironment" == "true" ]]; then
     environment=pr${GITHUB_EVENT_PULL_REQUEST_NUMBER}
   else
     environment=$PR_ENVIRONMENT
