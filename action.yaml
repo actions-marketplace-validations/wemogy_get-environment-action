@@ -94,3 +94,5 @@ runs:
         PROD_BRANCH: ${{ inputs.prod-branch }}
         PROD_DOMAIN_PREFIX: ${{ inputs.prod-domain-prefix }}
         PR_ENVIRONMENT: ${{ inputs.pr-environment }}
+        GITHUB_EVENT_PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+        GITHUB_EVENT_LABEL_NAME: ${{ github.event.label.name }}

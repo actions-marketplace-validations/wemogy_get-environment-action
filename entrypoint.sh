@@ -12,6 +12,9 @@ PROD_BRANCH=$PROD_BRANCH
 PROD_DOMAIN_PREFIX=$PROD_DOMAIN_PREFIX
 PR_ENVIRONMENT=$PR_ENVIRONMENT
 
+GITHUB_EVENT_PULL_REQUEST_NUMBER=$GITHUB_EVENT_PULL_REQUEST_NUMBER
+GITHUB_EVENT_LABEL_NAME=$GITHUB_EVENT_LABEL_NAME
+
 isCustomEnvironment=false
 
 # Find current branch
@@ -27,14 +30,14 @@ fi
 
 if [[ "$isPullRequest" == "true" ]]; then
   # Get labels of the pull request
-  labels=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels")
+  labels=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${GITHUB_EVENT_PULL_REQUEST_NUMBER}/labels")
   echo $labels
   # Check if labels contain the deploy-to-dev label
-  if [[ "$labels" == *"$DEPLOY_LABEL"* || "${{ github.event.label.name }}" == "$DEPLOY_LABEL" ]]; then
+  if [[ "$labels" == *"$DEPLOY_LABEL"* || "${GITHUB_EVENT_LABEL_NAME}" == "$DEPLOY_LABEL" ]]; then
     isDeploymentNeeded=true
   fi
   # Check if labels contain the deploy-to-custom label
-  if [[ "$labels" == *"$DEPLOY_CUSTOM_LABEL"* || "${{ github.event.label.name }}" == "$DEPLOY_CUSTOM_LABEL" ]]; then
+  if [[ "$labels" == *"$DEPLOY_CUSTOM_LABEL"* || "${GITHUB_EVENT_LABEL_NAME}" == "$DEPLOY_CUSTOM_LABEL" ]]; then
     isDeploymentNeeded=true
     isCustomEnvironment=true
   fi
@@ -60,14 +63,14 @@ elif [[ "$currentBranch" == "$PROD_BRANCH" ]]; then
   slug=prod
 elif [[ "$isPullRequest" == "true" ]]; then
   if [[ "$IS_CUSTOM_ENVIRONMENT" == "true" ]]; then
-    environment=pr${{ github.event.pull_request.number }}
+    environment=pr${GITHUB_EVENT_PULL_REQUEST_NUMBER}
   else
     environment=$PR_ENVIRONMENT
   fi
 
   exactMatch=false
-  domainPrefix=${{ github.event.pull_request.number }}.pr
-  slug=pr${{ github.event.pull_request.number }}
+  domainPrefix=${GITHUB_EVENT_PULL_REQUEST_NUMBER}.pr
+  slug=pr${GITHUB_EVENT_PULL_REQUEST_NUMBER}
 else
   echo "::warning title=Could not find environment::No matching branch and no Pull Request found."
 fi
