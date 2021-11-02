@@ -6,6 +6,13 @@ branding:
   color: "blue"
 
 inputs:
+  branch:
+    description: "Name of the branch this is running on"
+    required: true
+  is-pull-request:
+    description: "Is this running in context of a Pull Request?"
+    required: true
+
   prod-branch:
     description: "Name of the branch that should result in environment 'prod'"
     default: "prod"
@@ -49,15 +56,6 @@ outputs:
   exact-match:
     description: "Does the current branch exactly match one of the environments?"
     value: ${{ steps.check.outputs.exact-match }}
-  pull-request:
-    description: "Is the current branch part of a pull request?"
-    value: ${{ steps.check.outputs.pull-request }}
-  custom-environment:
-    description: "Deploying into a custom environment?"
-    value: ${{ steps.check.outputs.custom-environment }}
-  branch-name:
-    description: "The name of the branch this is running on"
-    value: ${{ steps.check.outputs.branch-name }}
   domain-prefix:
     description: "Prefix to use in domains"
     value: ${{ steps.check.outputs.domain-prefix }}
@@ -72,44 +70,41 @@ runs:
       id: check
       shell: bash
       run: |
+        CURRENT_BRANCH=${{ inputs.branch }}
+        IS_PULL_REQUEST=${{ inputs.is-pull-request }}
+        DEV_BRANCH=${{ inputs.dev-branch }}
+        DEV_DOMAIN_PREFIX=${{ inputs.dev-domain-prefix }}
+        STAGING_BRANCH=${{ inputs.staging-branch }}
+        STAGING_DOMAIN_PREFIX=${{ inputs.staging-domain-prefix }}
+        PROD_BRANCH=${{ inputs.prod-branch }}
+        PROD_DOMAIN_PREFIX=${{ inputs.prod-domain-prefix }}
+        PR_ENVIRONMENT=${{ inputs.pr-environment }}
+        IS_CUSTOM_ENVIRONMENT=${{ inputs.pr-use-custom-environment }}
+
         CUSTOM_ENVIRONMENT=false
 
-        # Find current branch
-        # When executing this in context of a pull request, the GITHUB_HEAD_REF points to the source branch.
-        # When executing this outside of a pull request, the GITHUB_HEAD_REF is empty and GITHUB_REF points to the current branch.
-        if [[ "${GITHUB_HEAD_REF}" != "" ]]; then
-          BRANCH_NAME=$(echo ${GITHUB_HEAD_REF})
-          PULL_REQUEST=true
-        else
-          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
-          PULL_REQUEST=false
-        fi
-
         # Compare current branch with environments
-        if [[ $BRANCH_NAME == "${{ inputs.staging-branch }}" ]]; then
-          ENVIRONMENT=staging
-          EXACT_MATCH=true
-          DOMAIN_PREFIX=${{ inputs.staging-domain-prefix }}
-          SLUG=staging
-        elif [[ $BRANCH_NAME == "${{ inputs.prod-branch }}" ]]; then
-          ENVIRONMENT=prod
-          EXACT_MATCH=true
-          DOMAIN_PREFIX=${{ inputs.prod-domain-prefix }}
-          SLUG=prod
-        elif [[ $BRANCH_NAME == "${{ inputs.dev-branch }}" ]]; then
+        if [[ "$CURRENT_BRANCH" == "$DEV_BRANCH" ]]; then
           ENVIRONMENT=dev
           EXACT_MATCH=true
-          DOMAIN_PREFIX=${{ inputs.dev-domain-prefix }}
+          DOMAIN_PREFIX=$DEV_DOMAIN_PREFIX
           SLUG=dev
-        elif [[ $PULL_REQUEST ]]; then
-          echo "Pull Request detected."
-
-          if [[ "${{ inputs.pr-use-custom-environment }}" == "true" ]]; then
-            echo "Deploying into custom environment."
+        elif [[ "$CURRENT_BRANCH" == "$STAGING_BRANCH" ]]; then
+          ENVIRONMENT=staging
+          EXACT_MATCH=true
+          DOMAIN_PREFIX=$STAGING_DOMAIN_PREFIX
+          SLUG=staging
+        elif [[ "$CURRENT_BRANCH" == "$PROD_BRANCH" ]]; then
+          ENVIRONMENT=prod
+          EXACT_MATCH=true
+          DOMAIN_PREFIX=$PROD_DOMAIN_PREFIX
+          SLUG=prod
+        elif [[ "$IS_PULL_REQUEST" == "true" ]]; then
+          if [[ "$IS_CUSTOM_ENVIRONMENT" == "true" ]]; then
             ENVIRONMENT=pr${{ github.event.pull_request.number }}
             CUSTOM_ENVIRONMENT=true
           else
-            ENVIRONMENT=${{ inputs.pr-environment }}
+            ENVIRONMENT=$PR_ENVIRONMENT
           fi
 
           EXACT_MATCH=false
@@ -119,23 +114,11 @@ runs:
           echo "::warning title=Could not find environment::No matching branch and no Pull Request found."
         fi
 
-        echo "Current branch: $BRANCH_NAME"
-        echo "::set-output name=branch-name::$BRANCH_NAME"
-
-        echo "Pull Request: $PULL_REQUEST"
-        echo "::set-output name=pull-request::$PULL_REQUEST"
-
         echo "Environment: $ENVIRONMENT"
         echo "::set-output name=env::$ENVIRONMENT"
-
-        echo "Custom Environment: $CUSTOM_ENVIRONMENT"
-        echo "::set-output name=custom-environment::$CUSTOM_ENVIRONMENT"
-
         echo "Exact match: $EXACT_MATCH"
         echo "::set-output name=exact-match::$EXACT_MATCH"
-
         echo "Domain prefix: $DOMAIN_PREFIX"
         echo "::set-output name=domain-prefix::$DOMAIN_PREFIX"
-
         echo "Slug: $SLUG"
         echo "::set-output name=slug::$SLUG"
