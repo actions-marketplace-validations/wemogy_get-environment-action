@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 # Ensure that the scrip is running with these environment variables:
 DEPLOY_LABEL=$DEPLOY_LABEL
 DEPLOY_CUSTOM_LABEL=$DEPLOY_CUSTOM_LABEL

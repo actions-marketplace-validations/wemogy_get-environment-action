@@ -1,9 +1,9 @@
 name: Test
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -13,5 +13,4 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./.
         with:
-          branch: "main"
-          is-pull-request: "false"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
