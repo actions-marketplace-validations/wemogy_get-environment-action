@@ -29,10 +29,9 @@ A GitHub Action to detect on which branch or Pull Request a workflow is running 
 
 ## Outputs
 
-| Output               | Description                                                                               |
-| -------------------- | ----------------------------------------------------------------------------------------- |
-| `env`                | Does the current branch exactly match one of the environments?                            |
-| `exact-match`        | The current branch exactly matches                                                        |
-| `custom-environment` | Deploying into a custom environment?                                                      |
-| `domain-prefix`      | Prefix to use in domains                                                                  |
-| `slug`               | Environment slug to attach as suffix to versions and resources like Kubernetes namespaces |
+| Output          | Description                                                                               |
+| --------------- | ----------------------------------------------------------------------------------------- |
+| `env`           | Does the current branch exactly match one of the environments?                            |
+| `exact-match`   | The current branch exactly matches                                                        |
+| `domain-prefix` | Prefix to use in domains                                                                  |
+| `slug`          | Environment slug to attach as suffix to versions and resources like Kubernetes namespaces |

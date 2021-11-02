@@ -81,8 +81,6 @@ runs:
         PR_ENVIRONMENT=${{ inputs.pr-environment }}
         IS_CUSTOM_ENVIRONMENT=${{ inputs.pr-use-custom-environment }}
 
-        CUSTOM_ENVIRONMENT=false
-
         # Compare current branch with environments
         if [[ "$CURRENT_BRANCH" == "$DEV_BRANCH" ]]; then
           ENVIRONMENT=dev
@@ -102,7 +100,6 @@ runs:
         elif [[ "$IS_PULL_REQUEST" == "true" ]]; then
           if [[ "$IS_CUSTOM_ENVIRONMENT" == "true" ]]; then
             ENVIRONMENT=pr${{ github.event.pull_request.number }}
-            CUSTOM_ENVIRONMENT=true
           else
             ENVIRONMENT=$PR_ENVIRONMENT
           fi
