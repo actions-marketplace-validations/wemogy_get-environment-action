@@ -11,7 +11,6 @@ STAGING_DOMAIN_PREFIX=$STAGING_DOMAIN_PREFIX
 PROD_BRANCH=$PROD_BRANCH
 PROD_DOMAIN_PREFIX=$PROD_DOMAIN_PREFIX
 PR_ENVIRONMENT=$PR_ENVIRONMENT
-
 GITHUB_EVENT_PULL_REQUEST_NUMBER=$GITHUB_EVENT_PULL_REQUEST_NUMBER
 GITHUB_EVENT_LABEL_NAME=$GITHUB_EVENT_LABEL_NAME
 
@@ -29,19 +28,27 @@ else
 fi
 
 if [[ "$isPullRequest" == "true" ]]; then
+  echo "Detected run in context of a Pull Request."
+  echo "Fetching Pull Request labels to check if Deployment is requested."
   # Get labels of the pull request
   labels=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${GITHUB_EVENT_PULL_REQUEST_NUMBER}/labels")
-  echo $labels
+  echo "Pull Request labels: $labels"
+
   # Check if labels contain the deploy-to-dev label
   if [[ "$labels" == *"$DEPLOY_LABEL"* || "${GITHUB_EVENT_LABEL_NAME}" == "$DEPLOY_LABEL" ]]; then
+    echo "Pull Request contains the $DEPLOY_LABEL label. Deployment is requested."
     isDeploymentNeeded=true
-  fi
   # Check if labels contain the deploy-to-custom label
-  if [[ "$labels" == *"$DEPLOY_CUSTOM_LABEL"* || "${GITHUB_EVENT_LABEL_NAME}" == "$DEPLOY_CUSTOM_LABEL" ]]; then
+  elif [[ "$labels" == *"$DEPLOY_CUSTOM_LABEL"* || "${GITHUB_EVENT_LABEL_NAME}" == "$DEPLOY_CUSTOM_LABEL" ]]; then
+    echo "Pull Request contains the $DEPLOY_CUSTOM_LABEL label. Deployment is requested. Custom Environment is requested."
     isDeploymentNeeded=true
     isCustomEnvironment=true
+  else
+    echo "Pull Request contains no deployment label. No Deployment is requested."
+    isDeploymentNeeded=flase
   fi
 else
+  echo "Detected run in context of a normal branch (no Pull Request). Deployment is requested"
   isDeploymentNeeded=true
 fi
 

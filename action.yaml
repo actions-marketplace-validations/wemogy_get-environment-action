@@ -85,7 +85,7 @@ runs:
       run: ./entrypoint.sh
       env:
         DEPLOY_LABEL: ${{ inputs.deploy-label }}
-        DEPLOY_CUSTOM_LABEL: ${{ inputs.deploy-to-customlabel }}
+        DEPLOY_CUSTOM_LABEL: ${{ inputs.deploy-to-custom-label }}
         GITHUB_TOKEN: ${{ inputs.github-token }}
         DEV_BRANCH: ${{ inputs.dev-branch }}
         DEV_DOMAIN_PREFIX: ${{ inputs.dev-domain-prefix }}
