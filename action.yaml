@@ -82,7 +82,7 @@ runs:
     - name: Check
       id: check
       shell: bash
-      run: ./entrypoint.sh
+      run: ${{ github.action_path }}/entrypoint.sh
       env:
         DEPLOY_LABEL: ${{ inputs.deploy-label }}
         DEPLOY_CUSTOM_LABEL: ${{ inputs.deploy-to-custom-label }}
