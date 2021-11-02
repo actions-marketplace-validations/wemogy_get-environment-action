@@ -5,9 +5,17 @@ A GitHub Action to detect on which branch or Pull Request a workflow is running 
 ## Usage
 
 ```yaml
+- uses: actions/checkout@v2
+- name: Get Run Context
+  id: get-run-context
+  uses: wemogy/get-run-context-action@v1.0
+        
 - name: Get Environment
   id: get-environment
   uses: wemogy/get-environment-action@v5.0
+  with:
+    branch:  ${{ steps.get-run-context.outputs.branch-name }}
+    is-pull-request: ${{ steps.get-run-context.outputs.is-pull-request }}
 
 - run: echo ${{ steps.get-environment.outputs.env }}
 ```
